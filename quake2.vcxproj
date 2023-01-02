@@ -467,7 +467,6 @@
     <ClInclude Include="client\vid.h" />
     <ClInclude Include="game\game.h" />
     <ClInclude Include="game\q_shared.h" />
-    <ClInclude Include="qcommon\bspfile.h" />
     <ClInclude Include="qcommon\qcommon.h" />
     <ClInclude Include="qcommon\qfiles.h" />
     <ClInclude Include="server\server.h" />
