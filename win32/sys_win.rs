@@ -1,10 +1,18 @@
 #![allow(dead_code, mutable_transmutes, non_camel_case_types, non_snake_case, non_upper_case_globals, unused_assignments, unused_mut)]
 #![register_tool(c2rust)]
 #![feature(c_variadic, extern_types, register_tool)]
+
+
+use winapi;
+
+pub const MAX_NUM_ARGVS: i8 = 128;
+
 extern "C" {
     pub type _IO_wide_data;
     pub type _IO_codecvt;
     pub type _IO_marker;
+
+
     fn fclose(__stream: *mut FILE) -> libc::c_int;
     fn fopen(_: *const libc::c_char, _: *const libc::c_char) -> *mut FILE;
     fn sprintf(_: *mut libc::c_char, _: *const libc::c_char, _: ...) -> libc::c_int;
@@ -29,7 +37,9 @@ extern "C" {
     fn InitConProc(argc_0: libc::c_int, argv_0: *mut *mut libc::c_char);
     fn DeinitConProc();
 }
+
 pub type __builtin_va_list = [__va_list_tag; 1];
+
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct __va_list_tag {
@@ -38,10 +48,12 @@ pub struct __va_list_tag {
     pub overflow_arg_area: *mut libc::c_void,
     pub reg_save_area: *mut libc::c_void,
 }
+
 pub type __off_t = libc::c_long;
 pub type __off64_t = libc::c_long;
 pub type size_t = libc::c_ulong;
 pub type va_list = __builtin_va_list;
+
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct _IO_FILE {
@@ -75,11 +87,14 @@ pub struct _IO_FILE {
     pub _mode: libc::c_int,
     pub _unused2: [libc::c_char; 20],
 }
+
 pub type _IO_lock_t = ();
 pub type FILE = _IO_FILE;
 pub type qboolean = libc::c_uint;
+
 pub const true_0: qboolean = 1;
 pub const false_0: qboolean = 0;
+
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct cvar_s {
@@ -91,7 +106,9 @@ pub struct cvar_s {
     pub value: libc::c_float,
     pub next: *mut cvar_s,
 }
+
 pub type cvar_t = cvar_s;
+
 #[no_mangle]
 pub static mut s_win95: qboolean = false_0;
 #[no_mangle]
@@ -109,15 +126,20 @@ pub static mut argc: libc::c_int = 0;
 #[no_mangle]
 pub static mut argv: [*mut libc::c_char; 128] = [0 as *const libc::c_char
     as *mut libc::c_char; 128];
+
 #[no_mangle]
 pub unsafe extern "C" fn Sys_Error(mut error: *mut libc::c_char, mut args: ...) {
     let mut argptr: ::std::ffi::VaListImpl;
     let mut text: [libc::c_char; 1024] = [0; 1024];
     CL_Shutdown();
     Qcommon_Shutdown();
+
     argptr = args.clone();
+
     vsprintf(text.as_mut_ptr(), error, argptr.as_va_list());
-    MessageBox(
+
+
+    winapi::um::winuser::MessageBox(
         0 as *mut libc::c_void,
         text.as_mut_ptr(),
         b"Error\0" as *const u8 as *const libc::c_char,
@@ -126,19 +148,27 @@ pub unsafe extern "C" fn Sys_Error(mut error: *mut libc::c_char, mut args: ...) 
     DeinitConProc();
     exit(1 as libc::c_int);
 }
+
 #[no_mangle]
 pub unsafe extern "C" fn Sys_Quit() {
-    timeEndPeriod(1 as libc::c_int);
+    winapi::um::timeapi::timeEndPeriod(1 as libc::c_int);
     CL_Shutdown();
     Qcommon_Shutdown();
+
     if !dedicated.is_null() && (*dedicated).value != 0. {
-        FreeConsole();
+        winapi::um::wincon::FreeConsole();
     }
+
     DeinitConProc();
     exit(0 as libc::c_int);
 }
+
 #[no_mangle]
 pub unsafe extern "C" fn WinError() {}
+
+#[no_mangle]
+pub unsafe extern "C" fn Sys_ScanForCD() -> *mut libc::c_char {}
+
 #[no_mangle]
 pub unsafe extern "C" fn Sys_CopyProtect() {
     let mut cddir: *mut libc::c_char = 0 as *mut libc::c_char;
@@ -151,8 +181,10 @@ pub unsafe extern "C" fn Sys_CopyProtect() {
         );
     }
 }
+
 static mut console_text: [libc::c_char; 256] = [0; 256];
 static mut console_textlen: libc::c_int = 0;
+
 #[no_mangle]
 pub unsafe extern "C" fn Sys_ConsoleOutput(mut string: *mut libc::c_char) {
     let mut dummy: libc::c_int = 0;
@@ -174,18 +206,22 @@ pub unsafe extern "C" fn Sys_ConsoleOutput(mut string: *mut libc::c_char) {
             as usize] = 0 as libc::c_int as libc::c_char;
     }
 }
+
 #[no_mangle]
 pub unsafe extern "C" fn Sys_SendKeyEvents() {
-    sys_frame_time = timeGetTime() as libc::c_uint;
+    sys_frame_time = winapi::um::timeapi::timeGetTime() as libc::c_uint;
 }
+
 #[no_mangle]
 pub unsafe extern "C" fn Sys_AppActivate() {}
+
 #[no_mangle]
 pub unsafe extern "C" fn ParseCommandLine(mut lpCmdLine: libc::c_int) {
     argc = 1 as libc::c_int;
     argv[0 as libc::c_int
         as usize] = b"exe\0" as *const u8 as *const libc::c_char as *mut libc::c_char;
 }
+
 #[no_mangle]
 pub static mut global_hInstance: libc::c_int = 0;
 #[no_mangle]

@@ -1,6 +1,7 @@
 #![allow(dead_code, mutable_transmutes, non_camel_case_types, non_snake_case, non_upper_case_globals, unused_assignments, unused_mut)]
 #![register_tool(c2rust)]
 #![feature(register_tool)]
+
 extern "C" {
     fn Com_sprintf(
         dest: *mut libc::c_char,
@@ -40,12 +41,16 @@ extern "C" {
     fn Scrap_Upload();
     static mut r_rawpalette: [libc::c_uint; 256];
 }
+
 pub type byte = libc::c_uchar;
 pub type qboolean = libc::c_uint;
+
 pub const true_0: qboolean = 1;
 pub const false_0: qboolean = 0;
+
 pub type vec_t = libc::c_float;
 pub type vec3_t = [vec_t; 3];
+
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct cplane_s {
@@ -55,6 +60,7 @@ pub struct cplane_s {
     pub signbits: byte,
     pub pad: [byte; 2],
 }
+
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct cvar_s {
@@ -66,8 +72,10 @@ pub struct cvar_s {
     pub value: libc::c_float,
     pub next: *mut cvar_s,
 }
+
 pub type cvar_t = cvar_s;
 pub type cplane_t = cplane_s;
+
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct image_s {
@@ -88,6 +96,7 @@ pub struct image_s {
     pub has_alpha: qboolean,
     pub paletted: qboolean,
 }
+
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct msurface_s {
@@ -113,7 +122,9 @@ pub struct msurface_s {
     pub cached_light: [libc::c_float; 4],
     pub samples: *mut byte,
 }
+
 pub type mtexinfo_t = mtexinfo_s;
+
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct mtexinfo_s {
@@ -123,8 +134,10 @@ pub struct mtexinfo_s {
     pub next: *mut mtexinfo_s,
     pub image: *mut image_t,
 }
+
 pub type image_t = image_s;
 pub type glpoly_t = glpoly_s;
+
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct glpoly_s {
@@ -134,12 +147,15 @@ pub struct glpoly_s {
     pub flags: libc::c_int,
     pub verts: [[libc::c_float; 7]; 4],
 }
+
 pub type imagetype_t = libc::c_uint;
+
 pub const it_sky: imagetype_t = 4;
 pub const it_pic: imagetype_t = 3;
 pub const it_wall: imagetype_t = 2;
 pub const it_sprite: imagetype_t = 1;
 pub const it_skin: imagetype_t = 0;
+
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct refimport_t {
@@ -185,20 +201,24 @@ pub struct refimport_t {
     pub Vid_MenuInit: Option::<unsafe extern "C" fn() -> ()>,
     pub Vid_NewWindow: Option::<unsafe extern "C" fn(libc::c_int, libc::c_int) -> ()>,
 }
+
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct viddef_t {
     pub width: libc::c_uint,
     pub height: libc::c_uint,
 }
+
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub union C2RustUnnamed {
     pub c: libc::c_uint,
     pub v: [byte; 4],
 }
+
 #[no_mangle]
 pub static mut draw_chars: *mut image_t = 0 as *const image_t as *mut image_t;
+
 #[no_mangle]
 pub unsafe extern "C" fn Draw_InitLocal() {
     draw_chars = GL_FindImage(
@@ -207,6 +227,7 @@ pub unsafe extern "C" fn Draw_InitLocal() {
     );
     GL_Bind((*draw_chars).texnum);
 }
+
 #[no_mangle]
 pub unsafe extern "C" fn Draw_Char(
     mut x: libc::c_int,
@@ -252,6 +273,7 @@ pub unsafe extern "C" fn Draw_Char(
     qglVertex2f.expect("non-null function pointer")(x, y + 8 as libc::c_int);
     qglEnd.expect("non-null function pointer")();
 }
+
 #[no_mangle]
 pub unsafe extern "C" fn Draw_FindPic(mut name: *mut libc::c_char) -> *mut image_t {
     let mut gl: *mut image_t = 0 as *mut image_t;
@@ -271,6 +293,7 @@ pub unsafe extern "C" fn Draw_FindPic(mut name: *mut libc::c_char) -> *mut image
     }
     return gl;
 }
+
 #[no_mangle]
 pub unsafe extern "C" fn Draw_GetPicSize(
     mut w: *mut libc::c_int,
@@ -287,6 +310,7 @@ pub unsafe extern "C" fn Draw_GetPicSize(
     *w = (*gl).width;
     *h = (*gl).height;
 }
+
 #[no_mangle]
 pub unsafe extern "C" fn Draw_StretchPic(
     mut x: libc::c_int,
@@ -335,6 +359,7 @@ pub unsafe extern "C" fn Draw_StretchPic(
     qglVertex2f.expect("non-null function pointer")(x, y + h);
     qglEnd.expect("non-null function pointer")();
 }
+
 #[no_mangle]
 pub unsafe extern "C" fn Draw_Pic(
     mut x: libc::c_int,
@@ -381,6 +406,7 @@ pub unsafe extern "C" fn Draw_Pic(
     qglVertex2f.expect("non-null function pointer")(x, y + (*gl).height);
     qglEnd.expect("non-null function pointer")();
 }
+
 #[no_mangle]
 pub unsafe extern "C" fn Draw_TileClear(
     mut x: libc::c_int,
@@ -438,6 +464,7 @@ pub unsafe extern "C" fn Draw_TileClear(
     qglVertex2f.expect("non-null function pointer")(x, y + h);
     qglEnd.expect("non-null function pointer")();
 }
+
 #[no_mangle]
 pub unsafe extern "C" fn Draw_Fill(
     mut x: libc::c_int,
@@ -479,6 +506,7 @@ pub unsafe extern "C" fn Draw_Fill(
             "non-null function pointer",
         )(1 as libc::c_int, 1 as libc::c_int, 1 as libc::c_int);
 }
+
 #[no_mangle]
 pub unsafe extern "C" fn Draw_FadeScreen() {
     qglColor4f
@@ -502,6 +530,7 @@ pub unsafe extern "C" fn Draw_FadeScreen() {
             "non-null function pointer",
         )(1 as libc::c_int, 1 as libc::c_int, 1 as libc::c_int, 1 as libc::c_int);
 }
+
 #[no_mangle]
 pub unsafe extern "C" fn Draw_StretchRaw(
     mut x: libc::c_int,

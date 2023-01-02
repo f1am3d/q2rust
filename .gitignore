@@ -1,5 +1,5 @@
-baseq2/
-**/debug/
+/baseq2
+**/debug
 /.vs/
-/.idea/
+/.idea
 /target

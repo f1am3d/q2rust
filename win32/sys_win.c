@@ -586,7 +586,7 @@ void ParseCommandLine (LPSTR lpCmdLine)
 /*
 ==================
 WinMain
-
+Entrypoint
 ==================
 */
 HINSTANCE	global_hInstance;
