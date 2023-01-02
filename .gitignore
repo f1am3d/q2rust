@@ -1,1 +1,5 @@
+baseq2/
+**/debug/
+/.vs/
+/.idea/
 /target
